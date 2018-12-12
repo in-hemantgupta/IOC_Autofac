@@ -4,3 +4,7 @@
 
 /.vs/IOC_autofac/v15
 /IOC_autofac/obj/Debug
+/Autofac_Samples_Logger/bin/Debug
+/Autofac_Samples_Logger/obj/Debug
+/IOC_autofac/bin/Debug
+/packages
