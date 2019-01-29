@@ -13,7 +13,7 @@ namespace AutofacSamples
     {
         public void Write(string message)
         {
-            Console.WriteLine(message);
+            Console.WriteLine("ConsoleLog "+ message);
         }
     }
 
@@ -22,7 +22,7 @@ namespace AutofacSamples
     {
         public void Write(string message)
         {
-            Console.WriteLine("hello" + message);
+            Console.WriteLine("ConsoleLog1 "+ message);
         }
     }
 
@@ -47,18 +47,22 @@ namespace AutofacSamples
     public class Car
     {
         private Engine engine;
-        private ILog log;
+        private ILog logs;
 
-        public Car(Engine engine, ILog log)
+        //public Car(Engine engine, IEnumerable<ILog> logs)
+        public Car(Engine engine, ILog logs)
         {
             this.engine = engine;
-            this.log = log;
+            this.logs = logs;
         }
 
         public void Go()
         {
             engine.Ahead(100);
-            log.Write("Car going forward...");
+            //foreach (var log in logs)
+            //{
+            logs.Write("Car going forward...");
+            //}
         }
     }
 
@@ -68,17 +72,18 @@ namespace AutofacSamples
         {
 
             var builder = new ContainerBuilder();
-            builder.RegisterType<ConsoleLog>().As<ILog>().AsSelf();
-
             //AUtofac register last register type as default, if we want to change that add PreserveExistingDefaults so that previous default will not be changed
-            builder.RegisterType<ConsoleLog1>().As<ILog>().PreserveExistingDefaults();
-            builder.RegisterType<Engine>();
-            builder.RegisterType<Car>();
 
+            builder.RegisterType<ConsoleLog1>().As<ILog>().AsSelf();//.PreserveExistingDefaults();
+            builder.RegisterType<ConsoleLog>().As<ILog>();//.AsSelf();
+            builder.RegisterType<Engine>();
+            //builder.RegisterType<Car>();
+            //builder.RegisterType<Car>().UsingConstructor(typeof(Engine), typeof(ConsoleLog1));
+            builder.Register<Car>(c=> new Car(c.Resolve<Engine>(), c.Resolve<ConsoleLog1>()));
             IContainer container = builder.Build();
 
-            var log = container.Resolve<ILog>();
-            log.Write("test");
+            //var log = container.Resolve<ILog>();
+            //log.Write("test");
             var car = container.Resolve<Car>();
             car.Go();
 
